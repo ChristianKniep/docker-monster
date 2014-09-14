@@ -64,6 +64,14 @@ ADD etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/NginxColl
 RUN yum install -y python-gunicorn 
 ADD etc/nginx/conf.d/diamond.conf /etc/nginx/conf.d/
 ADD etc/nginx/conf.d/graphite-api.conf /etc/nginx/conf.d/
+## nginx config for gapi
+ADD etc/nginx_gapi/ /etc/nginx_gapi/
+
+#### ETCD INST
+RUN yum install -y qnib-etcd
+RUN mkdir -p /var/lib/etcd
+ADD etc/supervisord.d/etcd.ini /etc/supervisord.d/etcd.ini
+ADD root/bin/start_etcd.sh /root/bin/start_etcd.sh
 
 ########################
 # GRAFANA
@@ -78,15 +86,7 @@ RUN mkdir -p /var/www
 RUN ln -s /opt/grafana-1.8.0-rc1 /var/www/grafana
 ADD opt/grafana/app/dashboards/ /var/www/grafana/app/dashboards/
 
-#### ETCD INST
-RUN yum install -y qnib-etcd
-RUN mkdir -p /var/lib/etcd
-ADD etc/supervisord.d/etcd.ini /etc/supervisord.d/etcd.ini
-ADD root/bin/start_etcd.sh /root/bin/start_etcd.sh
-
 ## Put all supervisor scripts in
 ADD etc/supervisord.d/ /etc/supervisord.d/
-
-ADD etc/nginx_gapi/ /etc/nginx_gapi/
 
 CMD /bin/supervisord -c /etc/supervisord.conf
