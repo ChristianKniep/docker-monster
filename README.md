@@ -18,7 +18,7 @@ export NO_COW="-v /var/lib/carbon/whisper -v /var/lib/elasticsearch"
 
 docker run -d -h monster --name monster --privileged \
      --privileged  ${DEV_MOUNTS} ${NO_COW} \
-     -p 9200:9200 -p 88:88 -p 5514:5514 \
+     -p 9200:9200 -p 88:88 -p 5514:5514 -p 80:80 \
      qnib/monster:latest
 ```
 
