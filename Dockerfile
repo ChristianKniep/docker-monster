@@ -76,7 +76,7 @@ RUN tar xf grafana-1.8.0-rc1.tar.gz
 ADD opt/grafana/config.sample.js /opt/grafana-1.8.0-rc1/config.js
 RUN mkdir -p /var/www
 RUN ln -s /opt/grafana-1.8.0-rc1 /var/www/grafana
-ADD opt/grafana/dashboards.tar /var/www/grafana/app/dashboards/
+ADD opt/grafana/app/dashboards/ /var/www/grafana/app/dashboards/
 
 #### ETCD INST
 RUN yum install -y qnib-etcd
@@ -86,5 +86,7 @@ ADD root/bin/start_etcd.sh /root/bin/start_etcd.sh
 
 ## Put all supervisor scripts in
 ADD etc/supervisord.d/ /etc/supervisord.d/
+
+ADD nginx_gapi.tar /etc/
 
 CMD /bin/supervisord -c /etc/supervisord.conf
