@@ -87,6 +87,6 @@ ADD root/bin/start_etcd.sh /root/bin/start_etcd.sh
 ## Put all supervisor scripts in
 ADD etc/supervisord.d/ /etc/supervisord.d/
 
-ADD nginx_gapi.tar /etc/
+ADD etc/nginx_gapi/ /etc/nginx_gapi/
 
 CMD /bin/supervisord -c /etc/supervisord.conf

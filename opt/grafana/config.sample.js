@@ -27,7 +27,7 @@ function (Settings) {
     datasources: {
         graphite: {
             type: 'graphite',
-            url: "http://"+window.location.hostname+":80/graphite-api",
+            url: "http://"+window.location.hostname+":88/graphite-api",
             default: true
         },
         elasticsearch: {
