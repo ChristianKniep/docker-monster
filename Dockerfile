@@ -63,7 +63,7 @@ ADD etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/NginxColl
 # gunicorn
 RUN yum install -y python-gunicorn 
 ADD etc/nginx/conf.d/diamond.conf /etc/nginx/conf.d/
-ADD etc/nginx/conf.d/graphite-api.conf /etc/nginx/conf.d/
+#ADD etc/nginx/conf.d/graphite-api.conf /etc/nginx/conf.d/
 ## nginx config for gapi
 ADD etc/nginx_gapi/ /etc/nginx_gapi/
 
