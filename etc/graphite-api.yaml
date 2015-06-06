@@ -7,4 +7,4 @@ functions:
 whisper:
   directories:
     - /var/lib/carbon/whisper
-time_zone: Europe/Paris
+time_zone: Europe/Berlin

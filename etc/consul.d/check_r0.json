@@ -1,0 +1,10 @@
+{
+  "service": {
+      "name": "carbon",
+      "port": 2003,
+      "check": {
+          "script": "nmap 127.0.0.1 -PN -p 2003 | grep open",
+          "interval": "10s"
+      }
+   }
+}
