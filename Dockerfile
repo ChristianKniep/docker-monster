@@ -1,4 +1,4 @@
-## Monster (ELK + carbon + graphite-api + grafana)
+## Monster (ELK + statsd + carbon + graphite-api + grafana)
 FROM qnib/logstash:trunk
 MAINTAINER "Christian Kniep <christian@qnib.org>"
 
@@ -10,13 +10,11 @@ RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch && \
 ADD etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/
 ADD etc/supervisord.d/elasticsearch.ini /etc/supervisord.d/elasticsearch.ini
 ADD etc/consul.d/check_elasticsearch.json /etc/consul.d/
-# diamond collector
-ADD etc/diamond/collectors/ElasticSearchCollector.conf /etc/diamond/collectors/ElasticSearchCollector.conf 
 
 ## nginx
 RUN yum install -y nginx httpd-tools
 ADD etc/nginx/ /etc/nginx/
-ADD etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/NginxCollector.conf
+ADD etc/diamond/collectors/ElasticSearchCollector.conf etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/
 
 # Add QNIBInc repo
 # statsd
@@ -29,16 +27,14 @@ RUN curl -s -o /tmp/kibana-${KIBANA_VER}.tar.gz https://download.elasticsearch.o
     tar xf /tmp/kibana-${KIBANA_VER}.tar.gz && rm -f /tmp/kibana-${KIBANA_VER}.tar.gz && \
     mv kibana-${KIBANA_VER} kibana
 ADD etc/nginx/conf.d/kibana.conf /etc/nginx/conf.d/kibana.conf
-WORKDIR /etc/nginx/
 # Config kibana-Dashboards
 ADD var/www/kibana/app/dashboards/ /var/www/kibana/app/dashboards/
 ADD var/www/kibana/config.js /var/www/kibana/config.js
 
 ## Kibana4
-WORKDIR /opt/
 ENV KIBANA_VER 4.0.2
-RUN curl -s -L -o kibana-${KIBANA_VER}-linux-x64.tar.gz https://download.elasticsearch.org/kibana/kibana/kibana-${KIBANA_VER}-linux-x64.tar.gz && \
-    tar xf kibana-${KIBANA_VER}-linux-x64.tar.gz && \
+RUN cd /opt/ && curl -s -L -o /opt/kibana-${KIBANA_VER}-linux-x64.tar.gz https://download.elasticsearch.org/kibana/kibana/kibana-${KIBANA_VER}-linux-x64.tar.gz && \
+    tar xf /opt/kibana-${KIBANA_VER}-linux-x64.tar.gz && \
     rm /opt/kibana*.tar.gz
 RUN ln -sf /opt/kibana-${KIBANA_VER}-linux-x64 /opt/kibana
 ADD etc/supervisord.d/kibana.ini /etc/supervisord.d/
@@ -70,7 +66,7 @@ ADD etc/consul.d/check_r0.json /etc/consul.d/
 ADD etc/carbon/ /etc/carbon/
 
 ###### pure graphite-api
-RUN yum install -y libffi-devel cairo python-gunicorn nginx && \
+RUN yum install -y libffi-devel cairo python-gunicorn && \
     pip install --upgrade pip && \
     pip install graphite-api && \
     mkdir -p /var/lib/graphite 
@@ -94,7 +90,6 @@ RUN wget -q -O /tmp/grafana-${GRAFANA_VER}.tar.gz  http://grafanarel.s3.amazonaw
 ADD etc/config.${GRAFANA_VER}.js /var/www/grafana-${GRAFANA_VER}/config.js
 ADD var/www/grafana-${GRAFANA_VER}/app/dashboards/ /var/www/grafana-${GRAFANA_VER}/app/dashboards/
 
-ADD etc/consul.d/ /etc/consul.d/
 
 #ADD etc/supervisord.d/slurmdash.ini /etc/supervisord.d/slurmdash.ini
 #ADD opt/qnib/grafana/bin/slurm_dashboard.py /opt/qnib/grafana/bin/

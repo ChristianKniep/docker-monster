@@ -1,0 +1,17 @@
+monster:
+    image: qnib/monster
+    ports:
+    - "8500:8500"
+    - "9200:9200"
+    - "8000:80"
+    - "2003:2003"
+    - "5601:5601"
+    - "8125/udp:8125/udp"
+    environment:
+    - DC_NAME=dc1
+    - CNT_TYPE=service
+    hostname: monster
+    dns: 127.0.0.1
+    privileged: true
+    #volumes:
+    #- "./etc/default/logstash/:/etc/logstash/conf.d/"
