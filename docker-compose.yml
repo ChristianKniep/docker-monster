@@ -10,8 +10,10 @@ monster:
     environment:
     - DC_NAME=dc1
     - CNT_TYPE=service
+    - FORWARD_TO_LOGSTASH=true
     hostname: monster
     dns: 127.0.0.1
     privileged: true
-    #volumes:
-    #- "./etc/default/logstash/:/etc/logstash/conf.d/"
+    volumes:
+    - "/var/lib/carbon/whisper/"
+    - "/var/lib/elasticsearch/"
