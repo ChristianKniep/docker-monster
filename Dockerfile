@@ -9,6 +9,7 @@ RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch && \
 #RUN sed -i "/# node.name:.*/a node.name: $(hostname)" /etc/elasticsearch/elasticsearch.yml
 ADD etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/
 ADD etc/supervisord.d/elasticsearch.ini /etc/supervisord.d/elasticsearch.ini
+ADD etc/consul.d/check_elasticsearch.json /etc/consul.d/
 # diamond collector
 ADD etc/diamond/collectors/ElasticSearchCollector.conf /etc/diamond/collectors/ElasticSearchCollector.conf 
 
@@ -79,6 +80,22 @@ ADD etc/graphite-api.yaml /etc/graphite-api.yaml
 ADD etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/NginxCollector.conf
 
 # gunicorn nginx
-ADD etc/nginx/nginx.conf /etc/nginx/nginx.conf
 ADD etc/nginx/conf.d/graphite-api.conf /etc/nginx/conf.d/
 ADD etc/supervisord.d/graphite-api.ini /etc/supervisord.d/graphite-api.ini
+
+###### grafana images
+ADD etc/nginx/conf.d/grafana.conf /etc/nginx/conf.d/
+
+# Grafana
+ENV GRAFANA_VER 1.9.1
+WORKDIR /var/www/
+RUN wget -q -O /tmp/grafana-${GRAFANA_VER}.tar.gz  http://grafanarel.s3.amazonaws.com/grafana-${GRAFANA_VER}.tar.gz && \
+    cd /opt/ && tar xf /tmp/grafana-${GRAFANA_VER}.tar.gz && rm -f /tmp/grafana-${GRAFANA_VER}.tar.gz
+ADD etc/config.${GRAFANA_VER}.js /var/www/grafana-${GRAFANA_VER}/config.js
+ADD var/www/grafana-${GRAFANA_VER}/app/dashboards/ /var/www/grafana-${GRAFANA_VER}/app/dashboards/
+
+ADD etc/consul.d/ /etc/consul.d/
+
+#ADD etc/supervisord.d/slurmdash.ini /etc/supervisord.d/slurmdash.ini
+#ADD opt/qnib/grafana/bin/slurm_dashboard.py /opt/qnib/grafana/bin/
+#ADD opt/qnib/grafana/templates/ /opt/qnib/grafana/templates/
