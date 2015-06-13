@@ -3,7 +3,9 @@ monster:
     ports:
     - "8500:8500"
     - "9200:9200"
-    - "8000:80"
+    - "80:80"
+    - "8080:8080"
+    - "8088:8088"
     - "2003:2003"
     - "5601:5601"
     - "8125/udp:8125/udp"
@@ -17,3 +19,4 @@ monster:
     volumes:
     - "/var/lib/carbon/whisper/"
     - "/var/lib/elasticsearch/"
+    - "./etc/nginx/conf.d/:/etc/nginx/conf.d/"

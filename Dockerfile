@@ -71,6 +71,7 @@ RUN yum install -y libffi-devel cairo python-gunicorn && \
     pip install graphite-api && \
     mkdir -p /var/lib/graphite 
 ADD etc/graphite-api.yaml /etc/graphite-api.yaml
+ADD etc/consul.d/check_gapi.json /etc/consul.d/
 
 ## Diamond
 ADD etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/NginxCollector.conf
@@ -84,9 +85,8 @@ ADD etc/nginx/conf.d/grafana.conf /etc/nginx/conf.d/
 
 # Grafana
 ENV GRAFANA_VER 1.9.1
-WORKDIR /var/www/
 RUN wget -q -O /tmp/grafana-${GRAFANA_VER}.tar.gz  http://grafanarel.s3.amazonaws.com/grafana-${GRAFANA_VER}.tar.gz && \
-    cd /opt/ && tar xf /tmp/grafana-${GRAFANA_VER}.tar.gz && rm -f /tmp/grafana-${GRAFANA_VER}.tar.gz
+    cd /var/www/ && tar xf /tmp/grafana-${GRAFANA_VER}.tar.gz && rm -f /tmp/grafana-${GRAFANA_VER}.tar.gz
 ADD etc/config.${GRAFANA_VER}.js /var/www/grafana-${GRAFANA_VER}/config.js
 ADD var/www/grafana-${GRAFANA_VER}/app/dashboards/ /var/www/grafana-${GRAFANA_VER}/app/dashboards/
 
