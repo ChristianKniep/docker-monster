@@ -1,10 +1,9 @@
-## Monster (ELK + statsd + carbon + graphite-api + grafana)
-FROM qnib/logstash:trunk
-MAINTAINER "Christian Kniep <christian@qnib.org>"
+## Monster (ELK + [statsd] + carbon + graphite-api + grafana)
+FROM qnib/logstash:fd22
 
 ADD etc/yum.repos.d/elasticsearch.repo /etc/yum.repos.d/
 RUN rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch && \
-    yum install -y which zeromq elasticsearch
+    dnf install -y which zeromq elasticsearch
 ## Makes no sense to be done while building
 #RUN sed -i "/# node.name:.*/a node.name: $(hostname)" /etc/elasticsearch/elasticsearch.yml
 ADD etc/elasticsearch/elasticsearch.yml /etc/elasticsearch/
@@ -12,13 +11,16 @@ ADD etc/supervisord.d/elasticsearch.ini /etc/supervisord.d/elasticsearch.ini
 ADD etc/consul.d/check_elasticsearch.json /etc/consul.d/
 
 ## nginx
-RUN yum install -y nginx httpd-tools
+RUN dnf install -y nginx httpd-tools
 ADD etc/nginx/ /etc/nginx/
 ADD etc/diamond/collectors/ElasticSearchCollector.conf etc/diamond/collectors/NginxCollector.conf /etc/diamond/collectors/
 
 # Add QNIBInc repo
 # statsd
-RUN yum install -y qnib-statsd qnib-grok-patterns 
+#RUN yum install -y qnib-statsd qnib-grok-patterns 
+
+## Grok patterns
+ADD etc/grok/ /etc/grok/
 
 ## Kibana3
 ENV KIBANA_VER 3.1.2
@@ -54,7 +56,7 @@ ADD opt/qnib/bin/ /opt/qnib/bin/
 ### CARBON
 VOLUME "/var/lib/carbon/whisper/"
 # carbon
-RUN yum install -y python-carbon && \
+RUN dnf install -y python-carbon && \
     mkdir -p /var/lib/carbon/{whisper,lists} && \
     chown carbon -R /var/lib/carbon/whisper/ && \
     rm -f /etc/carbon/* && \
@@ -66,7 +68,7 @@ ADD etc/consul.d/check_r0.json /etc/consul.d/
 ADD etc/carbon/ /etc/carbon/
 
 ###### pure graphite-api
-RUN yum install -y libffi-devel cairo python-gunicorn && \
+RUN dnf install -y libffi-devel cairo python-gunicorn && \
     pip install --upgrade pip && \
     pip install graphite-api && \
     mkdir -p /var/lib/graphite 
